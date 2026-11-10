@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Город на паузе</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f2f5;color:#17151b}button,input{font:inherit}button{cursor:pointer;border:0;border-radius:12px;padding:13px 17px}header{background:#151118;color:white;padding:18px 6%;display:flex;justify-content:space-between;align-items:center}.logo{font-size:27px;font-weight:900;color:#ff49b9}.hero{background:#151118;color:white;padding:70px 6%;min-height:80vh;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}.hero:after{content:"Ⅱ";position:absolute;right:5%;top:10%;font-size:300px;font-weight:900;color:#ff49b9;opacity:.16;transform:rotate(18deg);pointer-events:none}h1{font-size:clamp(48px,10vw,112px);line-height:.94;letter-spacing:-3px;margin:18px 0;position:relative;z-index:1}.pink{color:#ff49b9}.hero p{font-size:20px;max-width:460px;line-height:1.5;position:relative;z-index:1}.primary{background:#ff49b9;color:#171118;font-weight:bold}.hero button{align-self:flex-start;position:relative;z-index:1}main{max-width:1100px;margin:auto;padding:36px 20px}h2{font-size:clamp(30px,5vw,55px);letter-spacing:-1.5px}.muted{color:#777}.filters{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0}.filters button{background:white;border:1px solid #ddd}.filters .active{background:#171118;color:white}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:16px}.card{background:white;border-radius:20px;padding:22px;box-shadow:0 6px 25px #0000000a}.card h3{margin:12px 0}.pill{display:inline-block;padding:7px 12px;border-radius:30px;font-size:13px;font-weight:bold}.low{background:#c8f2d9;color:#155e35}.mid{background:#fff0b8;color:#805a00}.high{background:#ffd0d9;color:#9b1732}.card button{background:#171118;color:white;width:100%;margin-top:14px}.notice{background:#fce1f1;padding:15px;border-radius:12px;margin:20px 0}footer{padding:25px;text-align:center;color:#888;font-size:13px}@media(max-width:600px){.hero{min-height:65vh}.hero:after{font-size:180px}header{padding:16px 20px}}
+</style>
+</head>
+<body>
+<header><span class="logo">t2 × ГОРОД НА ПАУЗЕ</span><span>ОРЕНБУРГ</span></header>
+<section class="hero">
+<div>ЦИФРОВОЙ ГОРОД / ДЕМОНСТРАЦИОННЫЙ ПРОЕКТ</div>
+<h1>ГОРОД<br><span class="pink">НА ПАУЗЕ.</span></h1>
+<p>Меньше времени в очередях. Больше времени на жизнь.</p>
+<button class="primary" onclick="document.querySelector('main').scrollIntoView({behavior:'smooth'})">ИССЛЕДОВАТЬ ГОРОД ↗</button>
+</section>
+<main>
+<div class="muted">ГОРОДСКОЙ МОНИТОРИНГ / ОРЕНБУРГ</div>
+<h2>КАК ЗАГРУЖЕН<br>ТВОЙ ГОРОД?</h2>
+<div class="notice">Демонстрационный прототип. Показатели условные и не отражают реальную загруженность учреждений.</div>
+<div class="filters" id="filters"></div>
+<div class="grid" id="cards"></div>
+</main>
+<footer>ГОРОД НА ПАУЗЕ · Неофициальная концепция для Т2 · Данные сохраняются только на этом устройстве</footer>
+<script>
+const places=[
+['МФЦ','Шарлыкское шоссе, 1/2','МФЦ',2],
+['МФЦ','ул. Марины Расковой, 10А','МФЦ',1],
+['Городская поликлиника','Демонстрационная точка','Медицина',3],
+['Поликлиника №2','Демонстрационная точка','Медицина',2],
+['Автобусная остановка','Центр города (демо)','Транспорт',3],
+['Автобусная остановка','Проспект Победы (демо)','Транспорт',1],
+['Банковское отделение','Центр города (демо)','Банки',2],
+['Банковское отделение','Северный район (демо)','Банки',1]];
+let filter='Все';
+let ratings=JSON.parse(localStorage.getItem('cityRatings')||'{}');
+const categories=['Все','МФЦ','Медицина','Транспорт','Банки'];
+const names=['','Низкая','Средняя','Высокая'];
+const cls=['','low','mid','high'];
+function draw(){
+document.getElementById('filters').innerHTML=categories.map(c=>'<button class="'+(filter===c?'active':'')+'" onclick="filter='+JSON.stringify(c)+';draw()">'+c+'</button>').join('');
+document.getElementById('cards').innerHTML=places.map((p,i)=>({...p,i})).filter(p=>filter==='Все'||p[2]===filter).map(p=>{let v=ratings[p.i]||p[3];return '<article class="card"><span class="pill '+cls[v]+'">'+names[v]+' загруженность</span><h3>'+p[0]+'</h3><p class="muted">'+p[1]+'</p><p>Оценка: '+names[v]+'</p><button onclick="rate('+p.i+')">Сообщить о загруженности</button></article>'}).join('');
+}
+function rate(i){let x=prompt('Оцените загруженность: 1 – низкая, 2 – средняя, 3 – высокая');if(['1','2','3'].includes(x)){ratings[i]=Number(x);localStorage.setItem('cityRatings',JSON.stringify(ratings));draw();alert('Спасибо! Оценка сохранена на вашем устройстве.');}}
+draw();
+</script>
+</body>
+</html>
